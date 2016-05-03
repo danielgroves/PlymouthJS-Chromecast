@@ -1,0 +1,3 @@
+[submodule "flickrapi"]
+	path = flickrapi
+	url = git@github.com:Pomax/node-flickrapi.git

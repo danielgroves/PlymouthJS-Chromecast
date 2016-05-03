@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Georgia', serif;
+}
+
+article {
+  height: 38rem;
+  width: 50%;
+  float: left;
+  background-size: cover;
+}
+
+article h1,
+article p {
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 0 5px black;
+}
+
+article h1 {
+  font-weight: normal;
+  font-size: 2.5rem;
+
+  margin-top: 15rem;
+}
+
+article p {
+  padding-top: 5em;
+  font-size: 1.4rem;
+  font-style: italic;
+}

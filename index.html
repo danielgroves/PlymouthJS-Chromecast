@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Flickr Chromecast</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="js/MagicFlickrWrapper.js"></script>
+    <script type="text/javascript" src="flickrapi/browser/flickrapi.dev.js"></script>
+  </head>
+
+  <body>
+    <div id="flickr-container"></div>
+
+    <script type="text/javascript">
+      var flickrMagic = null;
+
+      var flickr = new Flickr({
+        api_key: '24ce45e1a83edb73b6656c50bd891985'
+      });
+
+      flickr.people.findByEmail({
+        find_email: 'danielsgroves@yahoo.co.uk'
+      }, function(error, result) {
+        if(error) { throw new Error(error); }
+
+        var userId = result.user.id;
+        flickrMagic = new MagicFlickrWrapper(userId);
+        flickrMagic.getPhotosets();
+      });
+    </script>
+  </body>
+</html>

@@ -5,6 +5,8 @@
     <title>Flickr Chromecast</title>
 
     <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+    <script type="text/javascript" src="js/ChromecastSender.js"></script>
     <script type="text/javascript" src="js/MagicFlickrWrapper.js"></script>
     <script type="text/javascript" src="flickrapi/browser/flickrapi.dev.js"></script>
   </head>
@@ -28,6 +30,8 @@
         flickrMagic = new MagicFlickrWrapper(userId);
         flickrMagic.getPhotosets();
       });
+
+      var cast = Chromesender("F816AFA3");
     </script>
   </body>
 </html>

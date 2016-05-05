@@ -1,9 +1,9 @@
-function MagicFlickrWrapper(userId) {
+function SenderFlickrApplication(userId) {
   this.userId = userId;
   this.images = new Array();
 }
 
-MagicFlickrWrapper.prototype.getPhotosets = function() {
+SenderFlickrApplication.prototype.getPhotosets = function() {
   var that = this;
   flickr.photosets.getList({
     user_id: this.userId

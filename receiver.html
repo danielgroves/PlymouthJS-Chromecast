@@ -31,6 +31,15 @@
         container.innerHTML = '';
         container.appendChild(article);
       }
+
+      function displayImage(imageUrl) {
+        var image = document.createElement('img');
+        image.src = imageUrl;
+
+        var container = document.getElementById('flickr-container');
+        container.innerHTML = '';
+        container.appendChild(image);
+      }
     </script>
   </body>
 </html>

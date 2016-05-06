@@ -39,3 +39,16 @@ FlickrApiWrapper.prototype.showAlbumMeta = function(albumId, displayCallback) {
     });
   });
 }
+
+FlickrApiWrapper.prototype.showSingleImage = function(imageId, displayCallback) {
+  this.flickr.photos.getSizes({
+    photo_id: imageId
+  }, function(error, data) {
+    console.info("Image " + imageId);
+    console.debug(data);
+
+    var imageUrl = data.sizes.size[9].source;
+
+    if (typeof displayCallback === 'function') displayCallback(imageUrl);
+  });
+}

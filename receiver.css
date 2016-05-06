@@ -20,6 +20,18 @@ article {
   bottom: 0;
 }
 
+img {
+  position: relative;
+  margin: auto auto;
+  display: block;
+
+  max-height: 90vh;
+  max-width: 90vw;
+
+  top: 50vh;
+  margin-top: -25%;
+}
+
 article h1,
 article p {
   background: rgba(0,0,0,0.8);

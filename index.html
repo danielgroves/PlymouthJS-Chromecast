@@ -4,10 +4,11 @@
   <head>
     <title>Flickr Chromecast</title>
 
+    <link rel="stylesheet" href="common.css" />
     <link rel="stylesheet" href="sender.css" />
     <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
     <script type="text/javascript" src="js/ChromecastSender.js"></script>
-    <script type="text/javascript" src="js/MagicFlickrWrapper.js"></script>
+    <script type="text/javascript" src="js/SenderFlickrApplication.js"></script>
     <script type="text/javascript" src="flickrapi/browser/flickrapi.dev.js"></script>
   </head>
 
@@ -27,7 +28,7 @@
         if(error) { throw new Error(error); }
 
         var userId = result.user.id;
-        flickrMagic = new MagicFlickrWrapper(userId);
+        flickrMagic = new SenderFlickrApplication(userId);
         flickrMagic.getPhotosets();
       });
 

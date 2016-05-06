@@ -4,14 +4,33 @@
   <head>
     <title>Flickr Chromecast</title>
 
+    <link rel="stylesheet" href="common.css" />
     <link rel="stylesheet" href="receiver.css" />
-    <script type="text/javascript" src="flickrapi/browser/flickrapi.dev.js"></script>
   </head>
 
   <body>
     <div id="flickr-container"></div>
 
+    <script type="text/javascript" src="flickrapi/browser/flickrapi.dev.js"></script>
+    <script type="text/javascript" src="js/ReceiverApplication.js"></script>
     <script type="text/javascript">
+      function displayAlbum(data) {
+        var article = document.createElement('article');
+        article.style.backgroundImage = "url(" + data.imageUrl + ")";
+
+        var title = document.createElement('h1');
+        title.innerHTML = data.title;
+
+        var description = document.createElement('p');
+        description.innerHTML = data.description;
+
+        article.appendChild(title);
+        article.appendChild(description);
+
+        var container = document.getElementById('flickr-container');
+        container.innerHTML = '';
+        container.appendChild(article);
+      }
     </script>
   </body>
 </html>

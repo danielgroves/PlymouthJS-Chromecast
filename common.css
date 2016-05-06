@@ -1,0 +1,14 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+article h1 {
+  font-weight: normal;
+  font-size: 2.5rem;
+}
+
+article p {
+  font-size: 1.4rem;
+  font-style: italic;
+}

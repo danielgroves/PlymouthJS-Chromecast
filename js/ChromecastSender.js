@@ -4,8 +4,11 @@
  * @param {string} appId - The app id for the cast receiver application to
  * connect to.
  */
-window.Chromesender = function(appId) {
+function Chromesender(appId) {
   'use strict';
+
+  this.namespace = 'urn:x-cast:com.danielsgroves.plymouthjs';
+  this.chromecast_session = null;
 
   /**
    * This callback is used to notify the sender application of an existing
@@ -32,7 +35,7 @@ window.Chromesender = function(appId) {
       return;
     }
 
-    chrome.cast.requestSession(requestSessionEstablished, requestSessionError);
+    chrome.cast.requestSession(requestSessionEstablished.bind(this), requestSessionError.bind(this));
   }
 
   /**
@@ -43,7 +46,8 @@ window.Chromesender = function(appId) {
     console.log("Request session established called.");
     console.debug(session);
 
-    // Handle messages and shizzle here
+    this.chromecast_session = session;
+    this.chromecast_session.addMessageListener(this.namespace, newChromecastMessage.bind(this));
   }
 
   /**
@@ -73,6 +77,10 @@ window.Chromesender = function(appId) {
     console.error(error);
   }
 
+  function newChromecastMessage(namespace, message) {
+    console.log("Message received on " + namespace + " -- " + message);
+  }
+
   /**
    * Inialises the Chromecast SDK and requests a new cast session.
    * @param {bool} loaded - Has the SDK finished initialising?
@@ -85,14 +93,42 @@ window.Chromesender = function(appId) {
     }
 
     var cast_session_request = new chrome.cast.SessionRequest(appId);
-    var cast_configuration = new chrome.cast.ApiConfig(cast_session_request, castSessionListener, castReceiverListener);
+    var cast_configuration = new chrome.cast.ApiConfig(cast_session_request, castSessionListener.bind(this), castReceiverListener.bind(this));
 
-    chrome.cast.initialize(cast_configuration, initialisationSuccess, initialisationError);
+    chrome.cast.initialize(cast_configuration, initialisationSuccess.bind(this), initialisationError.bind(this));
   }
 
   if (chrome.cast !== undefined && chrome.cast.isAvailable) {
-    initialiseChromecast(true, null);
+    initialiseChromecast(true, null).bind(this);
   } else {
-    window.__onGCastApiAvailable = initialiseChromecast;
+    window.__onGCastApiAvailable = initialiseChromecast.bind(this);
   }
 };
+
+
+window.Chromesender.prototype.sendMessage = function(message) {
+  function messageSuccess() {
+
+  }
+
+  function messageFailure() {
+
+  }
+
+  this.chromecast_session.sendMessage(this.namespace, message, messageSuccess, messageFailure);
+}
+
+
+function Message(key, value) {
+  this.key = key;
+  this.value = value;
+}
+
+Message.prototype.to_json = function() {
+  var message = {
+    key: this.key,
+    value: this.value
+  }
+
+  return message;
+}

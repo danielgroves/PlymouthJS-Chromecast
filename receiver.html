@@ -11,9 +11,46 @@
   <body>
     <div id="flickr-container"></div>
 
+    <script type="text/javascript" src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
     <script type="text/javascript" src="flickrapi/browser/flickrapi.dev.js"></script>
     <script type="text/javascript" src="js/ReceiverApplication.js"></script>
     <script type="text/javascript">
+      var chromecastConfiguration = new cast.receiver.CastReceiverManager.Config();
+      chromecastConfiguration.maxInactivity = 6400;
+
+      var receiverManager = cast.receiver.CastReceiverManager.getInstance();
+      var messageBus = receiverManager.getCastMessageBus("urn:x-cast:com.danielsgroves.plymouthjs");
+      messageBus.onMessage = newMessageLogger;
+
+      receiverManager.start(chromecastConfiguration);
+
+      var flickr = null;
+
+      function newMessageLogger(data) {
+        var message = JSON.parse(data.data);
+
+        console.log("Message is of type " + message.key);
+
+        if (message.key === 'setup') {
+          var userId = message.value.uid;
+          var apiKey = message.value.apikey;
+
+          flickr = new FlickrApiWrapper(apiKey, userId);
+        }
+
+        if (message.key === 'showalbum') {
+          var albumId = message.value;
+
+          flickr.showAlbumMeta(albumId, displayAlbum);
+        }
+
+        if (message.key === 'showimage') {
+          var imageId = message.value;
+
+          flickr.showSingleImage(imageId, displayImage);
+        }
+      }
+
       function displayAlbum(data) {
         var article = document.createElement('article');
         article.style.backgroundImage = "url(" + data.imageUrl + ")";

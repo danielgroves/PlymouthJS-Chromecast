@@ -4,7 +4,7 @@
  * @param {string} appId - The app id for the cast receiver application to
  * connect to.
  */
-function Chromesender(appId) {
+function Chromesender(appId, readyCallback) {
   'use strict';
 
   this.namespace = 'urn:x-cast:com.danielsgroves.plymouthjs';
@@ -48,6 +48,8 @@ function Chromesender(appId) {
 
     this.chromecast_session = session;
     this.chromecast_session.addMessageListener(this.namespace, newChromecastMessage.bind(this));
+
+    if (typeof readyCallback === 'function') readyCallback(session);
   }
 
   /**

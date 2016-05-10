@@ -125,7 +125,10 @@ PhotoThumbHandler.prototype.injectHtml = function(photoId, imageUrl) {
   img.setAttribute('data-flickr-id', photoId);
   img.classList.add('thumb');
 
-  document.getElementById('flickr-container').appendChild(img);
+  var figure = document.createElement('figure');
+  figure.appendChild(img);
+
+  document.getElementById('flickr-container').appendChild(figure);
 
   if (typeof this.callback === 'function') this.callback();
 }

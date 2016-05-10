@@ -16,23 +16,69 @@
     <div id="flickr-container"></div>
 
     <script type="text/javascript">
-      var flickrMagic = null;
+      var flickr_apikey = '24ce45e1a83edb73b6656c50bd891985';
+      var flickr_userId = '134067096@N08';
 
       var flickr = new Flickr({
-        api_key: '24ce45e1a83edb73b6656c50bd891985'
+        api_key: flickr_apikey
       });
 
-      flickr.people.findByEmail({
-        find_email: 'danielsgroves@yahoo.co.uk'
-      }, function(error, result) {
-        if(error) { throw new Error(error); }
+      var flickrMagic = new SenderFlickrApplication(flickr_userId);
+      flickrMagic.getPhotosets();
 
-        var userId = result.user.id;
-        flickrMagic = new SenderFlickrApplication(userId);
-        flickrMagic.getPhotosets();
-      });
+      var cast = new Chromesender("FAC0F8E6", readyCallback);
 
-      var cast = new Chromesender("FAC0F8E6");
+      function readyCallback(session) {
+        if (typeof session !== 'undefined') {
+          var message = new Message('setup', {
+            uid: flickr_userId,
+            apikey: flickr_apikey
+          });
+          cast.sendMessage(message);
+        } else {
+          flickrMagic.getPhotosets();
+        }
+
+        var albums = document.querySelectorAll('article.album');
+        addEventListenerToElements(albums, 'click', function(e) {
+          var article = e.target;
+
+          while(article.tagName !== 'ARTICLE') {
+            article = article.parentElement
+          }
+
+          var flickr_id = article.attributes['data-flickr-id'].value;
+
+          var message = new Message('showalbum', flickr_id);
+          cast.sendMessage(message);
+
+          flickrMagic.getAlbumThumbs(flickr_id, function() {
+            var imagethumbs = document.querySelectorAll('img.thumb');
+
+            addEventListenerToElements(imagethumbs, 'click', function(e){
+              var img = e.target;
+
+              while(img.tagName !== 'IMG') {
+                img = img.parentElement
+              }
+
+              var flickr_id = img.attributes['data-flickr-id'].value;
+
+              var message = new Message('showimage', flickr_id);
+              cast.sendMessage(message);
+            });
+
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = "Close";
+            closeBtn.classList.add('close');
+
+            document.getElementById('flickr-container').appendChild(closeBtn);
+            closeBtn.addEventListener('click', function() {
+              readyCallback();
+            });
+          });
+        });
+      }
     </script>
   </body>
 </html>

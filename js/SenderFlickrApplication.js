@@ -1,3 +1,9 @@
+function addEventListenerToElements(elements, eventName, callback) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].addEventListener(eventName, callback);
+  }
+}
+
 function SenderFlickrApplication(userId) {
   this.userId = userId;
   this.images = new Array();

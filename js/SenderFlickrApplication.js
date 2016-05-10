@@ -6,19 +6,24 @@ function addEventListenerToElements(elements, eventName, callback) {
 
 function SenderFlickrApplication(userId) {
   this.userId = userId;
-  this.images = new Array();
 }
 
-SenderFlickrApplication.prototype.getPhotosets = function() {
+SenderFlickrApplication.prototype.getPhotosets = function(callback) {
   var that = this;
   flickr.photosets.getList({
     user_id: this.userId
   }, function(error, result) {
     document.getElementById('flickr-container').innerHTML = '';
+    var photosets = result.photosets.photoset;
 
-    for(var i in result.photosets.photoset) {
-      var photoset = result.photosets.photoset[i];
-      that.images.push(new PhotosetHandler(that.userId, photoset));
+    for (var i = 0; i < photosets.length; i++) {
+      var photoset = photosets[i];
+
+      if ((photosets.length - 1) === i && typeof callback === 'function') {
+        new PhotosetHandler(that.userId, photoset, callback);
+      } else {
+        new PhotosetHandler(that.userId, photoset);
+      }
     }
   });
 }
@@ -44,10 +49,11 @@ SenderFlickrApplication.prototype.getAlbumThumbs = function(album_id, callback) 
   });
 }
 
-function PhotosetHandler(userId, photoset) {
+function PhotosetHandler(userId, photoset, callback) {
   this.userId = userId;
   this.photoset = photoset;
   this.background = null;
+  this.callback = callback;
 
   this.getPhotos(photoset.id)
 }
@@ -90,6 +96,8 @@ PhotosetHandler.prototype.injectHtml = function() {
   article.appendChild(description);
 
   document.getElementById('flickr-container').appendChild(article);
+
+  if (typeof this.callback === 'function') this.callback();
 }
 
 function PhotoThumbHandler(userId, photo, callback) {

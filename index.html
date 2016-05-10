@@ -26,20 +26,21 @@
       var flickrMagic = new SenderFlickrApplication(flickr_userId);
       flickrMagic.getPhotosets();
 
-      var cast = new Chromesender("FAC0F8E6", readyCallback);
+      var cast = new Chromesender("FAC0F8E6", castDeviceReadyCallback);
 
-      function readyCallback(session) {
-        if (typeof session !== 'undefined') {
+      function castDeviceReadyCallback(session) {
           var message = new Message('setup', {
             uid: flickr_userId,
             apikey: flickr_apikey
           });
           cast.sendMessage(message);
-        } else {
-          flickrMagic.getPhotosets();
-        }
 
+          watchPhotoset();
+      }
+
+      function watchPhotoset() {
         var albums = document.querySelectorAll('article.album');
+
         addEventListenerToElements(albums, 'click', function(e) {
           var article = e.target;
 
@@ -52,32 +53,50 @@
           var message = new Message('showalbum', flickr_id);
           cast.sendMessage(message);
 
-          flickrMagic.getAlbumThumbs(flickr_id, function() {
-            var imagethumbs = document.querySelectorAll('img.thumb');
-
-            addEventListenerToElements(imagethumbs, 'click', function(e){
-              var img = e.target;
-
-              while(img.tagName !== 'IMG') {
-                img = img.parentElement
-              }
-
-              var flickr_id = img.attributes['data-flickr-id'].value;
-
-              var message = new Message('showimage', flickr_id);
-              cast.sendMessage(message);
-            });
-
-            var closeBtn = document.createElement('button');
-            closeBtn.innerHTML = "Close";
-            closeBtn.classList.add('close');
-
-            document.getElementById('flickr-container').appendChild(closeBtn);
-            closeBtn.addEventListener('click', function() {
-              readyCallback();
-            });
-          });
+          flickrMagic.getAlbumThumbs(flickr_id, watchImageThumbnails);
         });
+      }
+
+      function watchImageThumbnails() {
+        var imagethumbs = document.querySelectorAll('img.thumb');
+
+        addEventListenerToElements(imagethumbs, 'click', function(e){
+          var img = e.target;
+
+          while(img.tagName !== 'IMG') {
+            img = img.parentElement
+          }
+
+          var flickr_id = img.attributes['data-flickr-id'].value;
+
+          var message = new Message('showimage', flickr_id);
+          cast.sendMessage(message);
+        });
+
+        var closeBtn = document.createElement('button');
+        closeBtn.innerHTML = "Close";
+        closeBtn.classList.add('close');
+
+        document.getElementById('flickr-container').appendChild(closeBtn);
+        closeBtn.addEventListener('click', function() {
+          flickrMagic.getPhotosets(watchPhotoset);
+        });
+      }function castDeviceReadyCallback(session) {
+          var message = new Message('setup', {
+            uid: flickr_userId,
+            apikey: flickr_apikey
+          });
+          cast.sendMessage(message);
+
+          watchPhotoset();
+      }function castDeviceReadyCallback(session) {
+          var message = new Message('setup', {
+            uid: flickr_userId,
+            apikey: flickr_apikey
+          });
+          cast.sendMessage(message);
+
+          watchPhotoset();
       }
     </script>
   </body>

@@ -15,22 +15,31 @@
     <script type="text/javascript" src="flickrapi/browser/flickrapi.dev.js"></script>
     <script type="text/javascript" src="js/ReceiverApplication.js"></script>
     <script type="text/javascript">
+      // Setup the cast SDK configuraiton
       var chromecastConfiguration = new cast.receiver.CastReceiverManager.Config();
       chromecastConfiguration.maxInactivity = 6400;
 
+      // Hookup the messagebus so we can hook into incoming messages
       var receiverManager = cast.receiver.CastReceiverManager.getInstance();
       var messageBus = receiverManager.getCastMessageBus("urn:x-cast:com.danielsgroves.plymouthjs");
-      messageBus.onMessage = newMessageLogger;
+      messageBus.onMessage = newMessageHandler;
 
+      // Start the SDK
       receiverManager.start(chromecastConfiguration);
 
       var flickr = null;
 
-      function newMessageLogger(data) {
+      /**
+       * Callback for newly received messages.
+       * This parses the message and determins the correct methods to call.
+       * @param {cast.receiver.CastMessageBus.Event} data - The incoming message object.
+       */
+      function newMessageHandler(data) {
+        // Parse the custom part of the message (as sent from the sender).
         var message = JSON.parse(data.data);
-
         console.log("Message is of type " + message.key);
 
+        // Initiate the API if it's key is setup
         if (message.key === 'setup') {
           var userId = message.value.uid;
           var apiKey = message.value.apikey;
@@ -38,12 +47,14 @@
           flickr = new FlickrApiWrapper(apiKey, userId);
         }
 
+        // Show album if the key is showalbum
         if (message.key === 'showalbum') {
           var albumId = message.value;
 
           flickr.showAlbumMeta(albumId, displayAlbum);
         }
 
+        // Show the single image if the key is showimage
         if (message.key === 'showimage') {
           var imageId = message.value;
 
@@ -51,6 +62,10 @@
         }
       }
 
+      /**
+       * Callback to display the `showAlbumMeta` results from the FlickrAPI wrapper.
+       * @param {Object} data - Generic object containing the results from the Fickr API call.
+       */
       function displayAlbum(data) {
         var article = document.createElement('article');
         article.style.backgroundImage = "url(" + data.imageUrl + ")";
@@ -69,6 +84,10 @@
         container.appendChild(article);
       }
 
+      /**
+       * Callback to display the `showSingleImage` results from the FlickrAPI wrapper.
+       * @param {String} The URL of the selected image.
+       */
       function displayImage(imageUrl) {
         var image = document.createElement('img');
         image.src = imageUrl;

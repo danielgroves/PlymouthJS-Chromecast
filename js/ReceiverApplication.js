@@ -1,3 +1,10 @@
+//
+// Everything in the document is about generating HTML based on the result from the Flickr API. 
+//
+// I will not document here on down as it is not Chromecast specific, but general javascript making use of the Flickr
+// node API wrapper.
+//
+
 var FlickrApiWrapper = function(apiKey, userId) {
   this.apiKey = apiKey;
   this.userId = userId;

@@ -1,8 +1,22 @@
+/**
+ * Applies event listeners to a array of html elements.
+ * @param {Array} elements - An array of HTML elements to apply the event listener to. Normally to result of a call
+ * to `document.querySelectorAll`
+ * @param {string} eventName - The name of the event to listen to.
+ * @param {function} callback - The function to call when the event is fired.
+ */
 function addEventListenerToElements(elements, eventName, callback) {
   for (var i = 0; i < elements.length; i++) {
     elements[i].addEventListener(eventName, callback);
   }
 }
+
+//
+// Everything below this point is about generating HTML based on the result from the Flickr API.
+//
+// I will not document here on down as it is not Chromecast specific, but general javascript making use of the Flickr
+// node API wrapper.
+//
 
 function SenderFlickrApplication(userId) {
   this.userId = userId;

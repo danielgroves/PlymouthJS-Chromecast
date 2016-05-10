@@ -107,20 +107,24 @@ function Chromesender(appId, readyCallback) {
   }
 };
 
+/**
+ * Sends a message to the receiver in the currently active cast session.
+ * @param {Message} message - An instance of the message object.
+ */
+Chromesender.prototype.sendMessage = function(message) {
+  function messageSuccess() { }
 
-window.Chromesender.prototype.sendMessage = function(message) {
-  function messageSuccess() {
-
-  }
-
-  function messageFailure() {
-
-  }
+  function messageFailure() { }
 
   this.chromecast_session.sendMessage(this.namespace, message, messageSuccess, messageFailure);
 }
 
-
+/**
+ * A message to send to the chromecast receiver.
+ * @param {String} key - The unique key to determine how to interpret the message on the chromecast device.
+ * @param {Object} value - Any JS object or derivative to be read on the remote end. If it is an object and not a normal
+ * type such as a String, Boolean or Number is will be serialised as JSON.
+ */
 function Message(key, value) {
   this.key = key;
   this.value = value;

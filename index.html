@@ -16,18 +16,34 @@
     <div id="flickr-container"></div>
 
     <script type="text/javascript">
+      /**
+       * API Key for the Flickr API
+       */
       var flickr_apikey = '24ce45e1a83edb73b6656c50bd891985';
+
+      /**
+       * User ID to use with the Flickr API
+       */
       var flickr_userId = '134067096@N08';
 
+      // Initiate the API wrapper
       var flickr = new Flickr({
         api_key: flickr_apikey
       });
 
+      // Initiate the wrapper that will generate the HTML for the UI
       var flickrMagic = new SenderFlickrApplication(flickr_userId);
       flickrMagic.getPhotosets();
 
+      // Start the cast session. This will active the SDK and allow the user to select their cast device.
       var cast = new Chromesender("FAC0F8E6", castDeviceReadyCallback);
 
+      /**
+       * Callback to call when the cast SDK has acquired a session.
+       * This sends the Flickr creditentials (user id and api key) to the receiver application for use when making
+       * requests.
+       * @param {chrome.cast.Session} session - A chromecast session object.
+       */
       function castDeviceReadyCallback(session) {
           var message = new Message('setup', {
             uid: flickr_userId,
@@ -38,65 +54,82 @@
           watchPhotoset();
       }
 
+      /**
+       * Called when all photosets required have been pulled from the Flickr API and elements have been built and
+       * injected into the DOM.
+       * This method binds up event listeners.
+       */
       function watchPhotoset() {
         var albums = document.querySelectorAll('article.album');
 
-        addEventListenerToElements(albums, 'click', function(e) {
-          var article = e.target;
-
-          while(article.tagName !== 'ARTICLE') {
-            article = article.parentElement
-          }
-
-          var flickr_id = article.attributes['data-flickr-id'].value;
-
-          var message = new Message('showalbum', flickr_id);
-          cast.sendMessage(message);
-
-          flickrMagic.getAlbumThumbs(flickr_id, watchImageThumbnails);
-        });
+        addEventListenerToElements(albums, 'click', clickedAlbumHandler);
       }
 
+      /**
+       * Called when an album is clicked.
+       * Gets the ID of the album from the attributes on the clicked album and then builds a message to tell the
+       * receiver what to display.
+       * Calls the Flickr API wrapper to tell it to build the thumbnails view.
+       * @param {Event} e - The JS event fired.
+       */
+      function clickedAlbumHandler(e) {
+        var article = e.target;
+
+        while(article.tagName !== 'ARTICLE') {
+          article = article.parentElement
+        }
+
+        var flickr_id = article.attributes['data-flickr-id'].value;
+
+        var message = new Message('showalbum', flickr_id);
+        cast.sendMessage(message);
+
+        flickrMagic.getAlbumThumbs(flickr_id, watchImageThumbnails);
+      }
+
+      /**
+       * Called when all image thumbnails required have been pulled from the Flickr API and elements have been built and
+       * injected into the DOM.
+       * This method binds up event listeners and injects the close button to return to album view.
+       */
       function watchImageThumbnails() {
         var imagethumbs = document.querySelectorAll('img.thumb');
 
-        addEventListenerToElements(imagethumbs, 'click', function(e){
-          var img = e.target;
-
-          while(img.tagName !== 'IMG') {
-            img = img.parentElement
-          }
-
-          var flickr_id = img.attributes['data-flickr-id'].value;
-
-          var message = new Message('showimage', flickr_id);
-          cast.sendMessage(message);
-        });
+        addEventListenerToElements(imagethumbs, 'click', clickedThumbnailHandler);
 
         var closeBtn = document.createElement('button');
         closeBtn.innerHTML = "Close";
         closeBtn.classList.add('close');
 
         document.getElementById('flickr-container').appendChild(closeBtn);
-        closeBtn.addEventListener('click', function() {
-          flickrMagic.getPhotosets(watchPhotoset);
-        });
-      }function castDeviceReadyCallback(session) {
-          var message = new Message('setup', {
-            uid: flickr_userId,
-            apikey: flickr_apikey
-          });
-          cast.sendMessage(message);
+        closeBtn.addEventListener('click', clickedCloseButtonHandler);
+      }
 
-          watchPhotoset();
-      }function castDeviceReadyCallback(session) {
-          var message = new Message('setup', {
-            uid: flickr_userId,
-            apikey: flickr_apikey
-          });
-          cast.sendMessage(message);
+      /**
+       * Called when an image thumbnail is clicked.
+       * Gets the ID of the image from the attributes on the clicked image and then builds a message to tell the
+       * receiver what to display.
+       * @param {Event} e - The JS event fired.
+       */
+      function clickedThumbnailHandler(e) {
+        var img = e.target;
 
-          watchPhotoset();
+        while(img.tagName !== 'IMG') {
+          img = img.parentElement
+        }
+
+        var flickr_id = img.attributes['data-flickr-id'].value;
+
+        var message = new Message('showimage', flickr_id);
+        cast.sendMessage(message);
+      }
+
+      /**
+       * Handles a click event on the close button.
+       * Gets the album images and passes the `watchPhotoset` function as a callback.
+       */
+      function clickedCloseButtonHandler() {
+        flickrMagic.getPhotosets(watchPhotoset);
       }
     </script>
   </body>

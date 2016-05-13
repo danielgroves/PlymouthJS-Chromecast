@@ -8,14 +8,4 @@ Usage:
 4. Replace the AppID in `index.html` and set an API key (`var appId = 'xxxxxx'` and `var apiKey = 'xxxxxxx'`)
 5. Load it in your browser and select your cast device.
 
-For more information about this repository, or to view the accompanying talk, checkout the article to to with it.
-
-TODO:
-
-* Add link to blog post
-* Tidy JS
-* Check no committed API keys
-* Thumbnail view styling
-* Comment code for new comers
-* Presentation
-* Sleep
+For more information about this repository, or to view the accompanying talk, [checkout the article to go with it](https://danielgroves.net/development/2016/05/plym-js-chromecast/ "Plymouth JS Chromecast Talk").
